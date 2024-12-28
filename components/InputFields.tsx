@@ -16,7 +16,7 @@ const styles = StyleSheet.create({
     paddingVertical: 12,
     paddingHorizontal: 18,
     alignSelf: "stretch",
-    borderRadius: 5, 
+    borderRadius: 5,
     padding: 10,
     marginBottom: 20,
   },

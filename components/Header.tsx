@@ -9,13 +9,20 @@ import React from "react";
 import { Ionicons } from "@expo/vector-icons";
 import { Colors } from "@/constants/Colors";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { Link } from "expo-router";
+import { Link, router } from "expo-router";
 
 export default function Header() {
   const inset = useSafeAreaInsets();
   return (
     <View style={[styles.container, { paddingTop: inset.top }]}>
-      <Text style={styles.logo}>ZappStore</Text>
+      <TouchableOpacity
+        onPress={() => {
+          router.dismissAll();
+          router.push("/(tabs)/");
+        }}
+      >
+        <Text style={styles.logo}>ZappStore</Text>
+      </TouchableOpacity>
       <Link href={"/explore"} asChild>
         <TouchableOpacity style={styles.searchbar}>
           <Text style={styles.searchText}>Search</Text>

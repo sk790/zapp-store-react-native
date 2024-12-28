@@ -9,25 +9,28 @@ import React from "react";
 import { Colors } from "@/constants/Colors";
 import HomeService from "./HomeService";
 import { router } from "expo-router";
-import GetSpList from "@/app/getsplist";
 
 export default function FeturedServices() {
   const feturedService = [
     {
       id: 1,
       title: "Electrical",
+      image: "../assets/images/electrical.jpg",
     },
     {
       id: 2,
       title: "Plumber",
+      image: "../assets/images/electrical.jpg",
     },
     {
       id: 3,
       title: "Painter",
+      image: "../assets/images/electrical.jpg",
     },
     {
       id: 4,
       title: "Cleaner",
+      image: "../assets/images/electrical.jpg",
     },
   ];
   const userCoords = JSON.stringify({ lat: 29.903841, long: 77.945432 });
@@ -64,8 +67,9 @@ export default function FeturedServices() {
             onPress={() => {
               getSp(item.title, userCoords);
             }}
+            key={item.id}
           >
-            <HomeService title={item.title} key={item.id} />
+            <HomeService title={item.title} image={item.image} />
           </TouchableOpacity>
         ))}
       </View>

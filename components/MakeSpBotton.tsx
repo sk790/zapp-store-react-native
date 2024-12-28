@@ -1,6 +1,7 @@
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import React from "react";
 import { Colors } from "@/constants/Colors";
+import { router } from "expo-router";
 
 export default function MakeSpBotton() {
   return (
@@ -19,6 +20,9 @@ export default function MakeSpBotton() {
           width: "100%",
           alignItems: "center",
           borderRadius: 5,
+        }}
+        onPress={() => {
+          router.push("/listservice");
         }}
       >
         <Text style={{ color: Colors.white, fontWeight: "600", fontSize: 16 }}>
