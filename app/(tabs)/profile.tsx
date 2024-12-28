@@ -18,7 +18,8 @@ import { AuthContext } from "@/context/authContext";
 
 export default function profile() {
   const inset = useSafeAreaInsets();
-  const { user, logout } = useContext(AuthContext);
+  const { user, logout, location } = useContext(AuthContext);
+  console.log({ location });
 
   return (
     <ScrollView
@@ -35,7 +36,7 @@ export default function profile() {
           />
           <View style={styles.nameSection}>
             <Text style={styles.name}>{user?.phone}</Text>
-            <Text style={styles.nickName}>nick name</Text>
+            <Text style={styles.nickName}>{"@saurabh"}</Text>
           </View>
         </View>
         <View style={{ flexDirection: "column", marginTop: 10, gap: 5 }}>

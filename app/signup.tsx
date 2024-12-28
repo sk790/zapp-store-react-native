@@ -1,4 +1,10 @@
-import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import {
+  ActivityIndicator,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
 import React, { useContext, useState } from "react";
 import { Link, router, Stack } from "expo-router";
 import InputFields from "@/components/InputFields";
@@ -10,6 +16,7 @@ type Props = {};
 
 const SignUpScreen = () => {
   const { user, setUserInfo } = useContext(AuthContext);
+  const [isLoading, setIsLoading] = useState(false);
   const [formData, setFormData] = useState({
     phone: "",
     password: "",
@@ -26,6 +33,7 @@ const SignUpScreen = () => {
       return alert("Passwords do not match");
     }
     try {
+      setIsLoading(true);
       const res = await fetch("http://192.168.120.190:5000/api/user/signup", {
         method: "POST",
         headers: {
@@ -38,13 +46,22 @@ const SignUpScreen = () => {
         router.dismissAll();
         router.replace("/(tabs)/");
       } else {
+        setIsLoading(false);
         const data = await res.json();
         alert(data.message);
       }
     } catch (error) {
+      setIsLoading(false);
       console.log({ error });
     }
   };
+  if (isLoading) {
+    return (
+      <View style={styles.loadingContainer}>
+        <ActivityIndicator size="large" color={Colors.primary} />
+      </View>
+    );
+  }
   return (
     <>
       <Stack.Screen options={{ headerTitle: "Sign Up" }} />
@@ -139,5 +156,11 @@ const styles = StyleSheet.create({
     borderTopWidth: StyleSheet.hairlineWidth,
     width: "30%",
     marginBottom: 30,
+  },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: Colors.white,
   },
 });

@@ -7,26 +7,22 @@ import {
   Text,
   View,
 } from "react-native";
-import React, { useRef } from "react";
+import React, { useContext, useRef } from "react";
 import MapView, { Marker } from "react-native-maps";
 import ProfileCard from "@/components/exploreComponents/ProfileCard";
 import haversineDistance from "@/constants/getDistance";
 import { useLocalSearchParams } from "expo-router";
 import Animated from "react-native-reanimated";
+import { AuthContext } from "@/context/authContext";
 
 type Props = {};
 
 const ExploreScreen = (props: Props) => {
   // const { service, userCoords } = useLocalSearchParams();
+  const { location } = useContext(AuthContext);
   const service = "Electrical";
   const scrollViewRef = useRef<ScrollView>(null);
 
-  const user = {
-    coords: {
-      lat: 29.903841,
-      long: 77.945432,
-    },
-  };
   const areaRange = 10;
   const Sp = [
     {
@@ -101,9 +97,12 @@ const ExploreScreen = (props: Props) => {
   const distances: number[] = [];
   const filterdSp = Sp.filter((sp) => sp.title === service);
 
-  const filterByDistanceandService = Sp.filter((sp) => {
+  Sp.filter((sp) => {
     const distance = haversineDistance(
-      { latitude: user.coords.lat, longitude: user.coords.long },
+      {
+        latitude: location.latitude,
+        longitude: location.longitude,
+      },
       { latitude: sp.coords.lat, longitude: sp.coords.long }
     );
     distances.push(distance); // Push distance to the distances array
@@ -120,32 +119,43 @@ const ExploreScreen = (props: Props) => {
   };
 
   return (
-    <View style={styles.container}>
-      <MapView
-        style={styles.map}
-        initialRegion={{
-          latitude: centralLatitude,
-          longitude: centralLongitude,
-          latitudeDelta: latitudeDelta,
-          longitudeDelta: longitudeDelta,
-        }}
-      >
-        {Sp.map((item, index) => {
-          return (
+    <>
+      <View style={styles.container}>
+        <MapView
+          style={styles.map}
+          initialRegion={{
+            latitude: centralLatitude,
+            longitude: centralLongitude,
+            latitudeDelta: latitudeDelta,
+            longitudeDelta: longitudeDelta,
+          }}
+        >
+          {Sp.map((item, index) => {
+            return (
+              <Marker
+                key={item.id}
+                coordinate={{
+                  latitude: item.coords.lat,
+                  longitude: item.coords.long,
+                }}
+                onPress={() => scrollToCard(index)}
+                title={item.name}
+                description={item.address}
+                pinColor="red"
+              />
+            );
+          })}
+          {location && (
             <Marker
-              key={item.id}
               coordinate={{
-                latitude: item.coords.lat,
-                longitude: item.coords.long,
+                latitude: location.latitude,
+                longitude: location.longitude,
               }}
-              onPress={() => scrollToCard(index)}
-              title={item.name}
-              description={item.address}
-              pinColor="red"
-            ></Marker>
-          );
-        })}
-      </MapView>
+              pinColor="blue"
+            />
+          )}
+        </MapView>
+      </View>
       <ScrollView
         horizontal
         ref={scrollViewRef}
@@ -168,7 +178,7 @@ const ExploreScreen = (props: Props) => {
           })}
         </View>
       </ScrollView>
-    </View>
+    </>
   );
 };
 
@@ -176,7 +186,7 @@ export default ExploreScreen;
 
 const styles = StyleSheet.create({
   container: {
-    // flex: 1,
+    height: "65%",
   },
   map: {
     width: "100%",
@@ -184,9 +194,10 @@ const styles = StyleSheet.create({
   },
   scrollView: {
     position: "absolute",
+
     bottom: 10,
     left: 10,
     right: 10,
-    height: 100,
+    height: "30%",
   },
 });

@@ -17,19 +17,18 @@ export const AuthProvider = ({ children }) => {
       setUser(JSON.parse(user));
     }
   };
-  const loadLocation = async () => {
-    const location = await AsyncStorage.getItem("location");
-    if (location) {
-      setLocation(JSON.parse(location));
-    }
+  const setUserLocation = async (coords) => {
+    await AsyncStorage.setItem("location", JSON.stringify(coords));
+    setLocation(coords);
   };
+
   const logout = async () => {
     await AsyncStorage.removeItem("user");
     setUser(null);
   };
   return (
     <AuthContext.Provider
-      value={{ user, setUserInfo, loadUser, location, loadLocation, logout }}
+      value={{ user, setUserInfo, loadUser, location, setUserLocation, logout }}
     >
       {children}
     </AuthContext.Provider>

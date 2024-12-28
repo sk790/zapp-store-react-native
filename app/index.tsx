@@ -5,23 +5,37 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import React, { useContext, useEffect } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { Link, router, Stack } from "expo-router";
 import { LinearGradient } from "expo-linear-gradient";
 import { Colors } from "@/constants/Colors";
 import Animated, { FadeInLeft, FadeInRight } from "react-native-reanimated";
 import SocialLoginBottons from "@/components/SocialLoginBottons";
 import { AuthContext } from "@/context/authContext";
+import * as Location from "expo-location";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 type Props = {};
 
 const WelcomeScreen = (props: Props) => {
-  const { user, setUserInfo } = useContext(AuthContext);
+  const { user, setUserInfo, setUserLocation } = useContext(AuthContext);
+  const [errorMsg, setErrorMsg] = useState<String | null>(null);
   useEffect(() => {
     if (user) {
       router.replace("/(tabs)");
     }
   }, [user]);
+
+  useEffect(() => {
+    (async () => {
+      let { status } = await Location.requestForegroundPermissionsAsync();
+      if (status !== "granted") {
+        setErrorMsg("Permission to access location was denied");
+      }
+      let loc = await Location.getCurrentPositionAsync({});
+      setUserLocation(loc.coords);
+    })();
+  }, []);
 
   return (
     <>
