@@ -6,15 +6,20 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import React from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import ProfileField from "@/components/profileTabComponents/ProfileField";
 import ImageSection from "@/components/profileTabComponents/ImageSection";
 import { Colors } from "@/constants/Colors";
 import { Ionicons } from "@expo/vector-icons";
+import { router } from "expo-router";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { AuthContext } from "@/context/authContext";
 
 export default function profile() {
   const inset = useSafeAreaInsets();
+  const { user, logout } = useContext(AuthContext);
+
   return (
     <ScrollView
       contentContainerStyle={[
@@ -29,13 +34,13 @@ export default function profile() {
             style={{ width: 100, height: 100, borderRadius: 50 }}
           />
           <View style={styles.nameSection}>
-            <Text style={styles.name}>Saurabh</Text>
+            <Text style={styles.name}>{user?.phone}</Text>
             <Text style={styles.nickName}>nick name</Text>
           </View>
         </View>
         <View style={{ flexDirection: "column", marginTop: 10, gap: 5 }}>
           <ImageSection label="roorkee" icon={"location-outline"} />
-          <ImageSection label="7900482040" icon={"call-outline"} />
+          <ImageSection label={user?.phone!} icon={"call-outline"} />
           <ImageSection label="saurabh@gmail.com" icon={"mail-outline"} />
         </View>
         <View style={styles.divider} />
@@ -51,12 +56,23 @@ export default function profile() {
           <ProfileField label="Your Service" icon={"create-outline"} />
           <ProfileField label="Settings" icon={"settings-outline"} />
         </View>
-        <TouchableOpacity style={styles.addServiceBtn}>
+        <TouchableOpacity
+          style={styles.addServiceBtn}
+          onPress={() => {
+            router.push("/listservice");
+          }}
+        >
           <Text style={styles.addServiceBtnText}>Add Your Service</Text>
         </TouchableOpacity>
       </View>
 
-      <TouchableOpacity style={{ margin: 20 }} onPress={() => {}}>
+      <TouchableOpacity
+        style={{ margin: 20 }}
+        onPress={() => {
+          logout();
+          router.replace("/");
+        }}
+      >
         <View style={{ flexDirection: "row", alignItems: "center", gap: 5 }}>
           <Ionicons name="log-out-outline" size={30} color="red" />
           <Text style={{ color: "red", fontWeight: "600" }}>Logout</Text>

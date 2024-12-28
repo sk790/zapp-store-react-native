@@ -6,13 +6,13 @@ export default function HomeService({
   image,
 }: {
   title: string;
-  image: string;
+  image: any;
 }) {
   const WIDTH = Dimensions.get("window").width;
   return (
     <View style={[styles.container, { width: WIDTH / 2 - 24 }]}>
       <Image
-        source={require("@/assets/images/electrical.jpeg")}
+        source={image}
         style={{ width: "100%", height: 125, borderRadius: 10 }}
       />
       <Text>{title}</Text>

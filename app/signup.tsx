@@ -1,37 +1,81 @@
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
-import React from "react";
-import { Link, Stack } from "expo-router";
+import React, { useContext, useState } from "react";
+import { Link, router, Stack } from "expo-router";
 import InputFields from "@/components/InputFields";
 import { Colors } from "@/constants/Colors";
 import SocialLoginBottons from "@/components/SocialLoginBottons";
+import { AuthContext } from "@/context/authContext";
 
 type Props = {};
 
-const SignUpScreen = (props: Props) => {
+const SignUpScreen = () => {
+  const { user, setUserInfo } = useContext(AuthContext);
+  const [formData, setFormData] = useState({
+    phone: "",
+    password: "",
+    confirmPassword: "",
+  });
+  const handleInputChange = (key: string, value: string) => {
+    setFormData((prev) => ({
+      ...prev,
+      [key]: value,
+    }));
+  };
+  const handleSubmit = async () => {
+    if (formData.password !== formData.confirmPassword) {
+      return alert("Passwords do not match");
+    }
+    try {
+      const res = await fetch("http://192.168.120.190:5000/api/user/signup", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(formData),
+      });
+      if (res.status === 201) {
+        setUserInfo(formData);
+        router.dismissAll();
+        router.replace("/(tabs)/");
+      } else {
+        const data = await res.json();
+        alert(data.message);
+      }
+    } catch (error) {
+      console.log({ error });
+    }
+  };
   return (
     <>
       <Stack.Screen options={{ headerTitle: "Sign Up" }} />
       <View style={styles.container}>
         <Text style={styles.title}>Create an accont</Text>
         <InputFields
-          placeholder="Email Address"
+          placeholder="Phone number.."
           placeholderTextColor={Colors.gray}
           autoCapitalize="none"
-          keyboardType="email-address"
+          keyboardType="number-pad"
+          value={formData.phone}
+          maxLength={10}
+          onChangeText={(value) => handleInputChange("phone", value)}
         />
         <InputFields
           placeholder="Password"
           placeholderTextColor={Colors.gray}
           autoCapitalize="none"
+          value={formData.password}
           secureTextEntry={true}
+          onChangeText={(value) => handleInputChange("password", value)}
         />
         <InputFields
           placeholder="Confirm password"
           placeholderTextColor={Colors.gray}
           autoCapitalize="none"
           secureTextEntry={true}
+          value={formData.confirmPassword}
+          onChangeText={(value) => handleInputChange("confirmPassword", value)}
         />
-        <TouchableOpacity style={styles.btn}>
+        <TouchableOpacity style={styles.btn} onPress={handleSubmit}>
           <Text style={styles.btnText}>Sign Up</Text>
         </TouchableOpacity>
         <View style={styles.text}>
@@ -42,8 +86,8 @@ const SignUpScreen = (props: Props) => {
             </TouchableOpacity>
           </Link>
         </View>
-        <View style={styles.divider}/>
-        <SocialLoginBottons emailhref={"/signin"}/>
+        <View style={styles.divider} />
+        <SocialLoginBottons emailhref={"/signin"} />
       </View>
     </>
   );
@@ -90,10 +134,10 @@ const styles = StyleSheet.create({
     color: Colors.primary,
     fontWeight: "600",
   },
-  divider:{
+  divider: {
     borderTopColor: Colors.lightGray,
     borderTopWidth: StyleSheet.hairlineWidth,
-    width:"30%",
-    marginBottom:30
-  }
+    width: "30%",
+    marginBottom: 30,
+  },
 });

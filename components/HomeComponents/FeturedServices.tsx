@@ -7,7 +7,7 @@ import {
 } from "react-native";
 import React from "react";
 import { Colors } from "@/constants/Colors";
-import HomeService from "./HomeService";
+import HomeService from "@/components/HomeComponents/HomeService";
 import { router } from "expo-router";
 
 export default function FeturedServices() {
@@ -15,22 +15,22 @@ export default function FeturedServices() {
     {
       id: 1,
       title: "Electrical",
-      image: "../assets/images/electrical.jpg",
+      image: require("@/assets/images/electrical.jpeg"),
     },
     {
       id: 2,
       title: "Plumber",
-      image: "../assets/images/electrical.jpg",
+      image: require("@/assets/images/electrical.jpeg"),
     },
     {
       id: 3,
       title: "Painter",
-      image: "../assets/images/electrical.jpg",
+      image: require("@/assets/images/electrical.jpeg"),
     },
     {
       id: 4,
       title: "Cleaner",
-      image: "../assets/images/electrical.jpg",
+      image: require("@/assets/images/electrical.jpeg"),
     },
   ];
   const userCoords = JSON.stringify({ lat: 29.903841, long: 77.945432 });

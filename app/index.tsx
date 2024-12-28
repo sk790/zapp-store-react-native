@@ -5,16 +5,24 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import React from "react";
-import { Link, Stack } from "expo-router";
+import React, { useContext, useEffect } from "react";
+import { Link, router, Stack } from "expo-router";
 import { LinearGradient } from "expo-linear-gradient";
 import { Colors } from "@/constants/Colors";
 import Animated, { FadeInLeft, FadeInRight } from "react-native-reanimated";
 import SocialLoginBottons from "@/components/SocialLoginBottons";
+import { AuthContext } from "@/context/authContext";
 
 type Props = {};
 
 const WelcomeScreen = (props: Props) => {
+  const { user, setUserInfo } = useContext(AuthContext);
+  useEffect(() => {
+    if (user) {
+      router.replace("/(tabs)");
+    }
+  }, [user]);
+
   return (
     <>
       <Stack.Screen options={{ headerShown: false }} />
