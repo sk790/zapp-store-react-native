@@ -1,9 +1,9 @@
 import React from "react";
 import { Dimensions, StyleSheet, View } from "react-native";
 import Animated, { useSharedValue } from "react-native-reanimated";
-import ParallaxCarouselCard from "../components/parallax-carousel-card";
-import { data } from "../data/slidedata";
-import ParallaxCarouselPagination from "../components/parallax-carousel-pagination";
+import ParallaxCarouselCard from "@/components/SliderBannerComponents/parallax-carousel-card";
+import { data } from "@/data/slidedata";
+import ParallaxCarouselPagination from "@/components/SliderBannerComponents/parallax-carousel-pagination";
 
 const OFFSET = 45;
 const ITEM_WIDTH = Dimensions.get("window").width - OFFSET * 2;

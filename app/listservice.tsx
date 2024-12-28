@@ -7,9 +7,9 @@ import {
 } from "react-native";
 import React, { useState } from "react";
 import CheckBox from "react-native-check-box";
-import CategoryDropdown from "@/components/CategoryDropdown";
+import CategoryDropdown from "@/components/addServiceComponents/CategoryDropdown";
 import { Colors } from "@/constants/Colors";
-import InputWithLabel from "@/components/InputWithLabel";
+import InputWithLabel from "@/components/addServiceComponents/InputWithLabel";
 import Header from "@/components/Header";
 import { Stack } from "expo-router";
 

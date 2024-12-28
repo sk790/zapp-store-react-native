@@ -8,8 +8,8 @@ import {
 } from "react-native";
 import React from "react";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import ProfileField from "@/components/profileTabComponent/ProfileField";
-import ImageSection from "@/components/profileTabComponent/ImageSection";
+import ProfileField from "@/components/profileTabComponents/ProfileField";
+import ImageSection from "@/components/profileTabComponents/ImageSection";
 import { Colors } from "@/constants/Colors";
 import { Ionicons } from "@expo/vector-icons";
 
@@ -51,7 +51,11 @@ export default function profile() {
           <ProfileField label="Your Service" icon={"create-outline"} />
           <ProfileField label="Settings" icon={"settings-outline"} />
         </View>
+        <TouchableOpacity style={styles.addServiceBtn}>
+          <Text style={styles.addServiceBtnText}>Add Your Service</Text>
+        </TouchableOpacity>
       </View>
+
       <TouchableOpacity style={{ margin: 20 }} onPress={() => {}}>
         <View style={{ flexDirection: "row", alignItems: "center", gap: 5 }}>
           <Ionicons name="log-out-outline" size={30} color="red" />
@@ -102,5 +106,17 @@ const styles = StyleSheet.create({
     fontWeight: "500",
     color: Colors.gray,
     fontStyle: "italic",
+  },
+  addServiceBtn: {
+    marginTop: 20,
+    backgroundColor: Colors.highlight,
+    padding: 15,
+    borderRadius: 10,
+    alignItems: "center",
+  },
+  addServiceBtnText: {
+    color: Colors.white,
+    fontWeight: "600",
+    fontSize: 16,
   },
 });
