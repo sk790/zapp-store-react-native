@@ -13,24 +13,24 @@ import Animated, { FadeInLeft, FadeInRight } from "react-native-reanimated";
 import SocialLoginBottons from "@/components/SocialLoginBottons";
 import { AuthContext } from "@/context/authContext";
 import * as Location from "expo-location";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 
 type Props = {};
 
 const WelcomeScreen = (props: Props) => {
-  const { user, setUserInfo, setUserLocation } = useContext(AuthContext);
-  const [errorMsg, setErrorMsg] = useState<String | null>(null);
+  const { token, setUserLocation } = useContext(AuthContext);
+  const { loadToken } = useContext(AuthContext);
   useEffect(() => {
-    if (user) {
+    if (token) {
       router.replace("/(tabs)");
     }
-  }, [user]);
+  }, [token]);
 
   useEffect(() => {
+    loadToken();
     (async () => {
       let { status } = await Location.requestForegroundPermissionsAsync();
       if (status !== "granted") {
-        setErrorMsg("Permission to access location was denied");
+        alert("Permission to access location was denied");
       }
       let loc = await Location.getCurrentPositionAsync({});
       setUserLocation(loc.coords);

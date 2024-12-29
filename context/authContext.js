@@ -5,16 +5,21 @@ export const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
+  const [token, setToken] = useState(null);
   const [loading, setLoading] = useState(true);
   const [location, setLocation] = useState(null);
+
+  const setUserToken = async (token) => {
+    setToken(token);
+    await AsyncStorage.setItem("token", JSON.stringify(token));
+  };
   const setUserInfo = async (userInfo) => {
     setUser(userInfo);
-    await AsyncStorage.setItem("user", JSON.stringify(userInfo));
   };
-  const loadUser = async () => {
-    const user = await AsyncStorage.getItem("user");
-    if (user) {
-      setUser(JSON.parse(user));
+  const loadToken = async () => {
+    const token = await AsyncStorage.getItem("token");
+    if (token) {
+      setUserToken(JSON.parse(token));
     }
   };
   const setUserLocation = async (coords) => {
@@ -23,12 +28,21 @@ export const AuthProvider = ({ children }) => {
   };
 
   const logout = async () => {
-    await AsyncStorage.removeItem("user");
-    setUser(null);
+    await AsyncStorage.removeItem("token");
+    setUserToken(null);
   };
   return (
     <AuthContext.Provider
-      value={{ user, setUserInfo, loadUser, location, setUserLocation, logout }}
+      value={{
+        user,
+        setUserInfo,
+        loadToken,
+        location,
+        setUserLocation,
+        logout,
+        setUserToken,
+        token,
+      }}
     >
       {children}
     </AuthContext.Provider>

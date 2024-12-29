@@ -5,13 +5,14 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import CheckBox from "react-native-check-box";
 import CategoryDropdown from "@/components/addServiceComponents/CategoryDropdown";
 import { Colors } from "@/constants/Colors";
 import InputWithLabel from "@/components/addServiceComponents/InputWithLabel";
 import Header from "@/components/Header";
-import { Stack } from "expo-router";
+import { router, Stack } from "expo-router";
+import { AuthContext } from "@/context/authContext";
 
 export default function listservice() {
   const [formData, setFormData] = useState({
@@ -33,9 +34,24 @@ export default function listservice() {
     setSelectedCategory(value);
     formData.category = value as string;
   };
-  const handleSubmit = () => {
-    console.log("Form Data Submitted:", formData);
-    // Perform further actions like sending the data to an API
+  const handleSubmit = async () => {
+    const res = await fetch(
+      "http://192.168.120.190:5000/api/service/add-service",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(formData),
+      }
+    );
+    const data = await res.json();
+    if (res.status === 200) {
+      alert(data.message);
+      router.replace("/(tabs)/");
+    } else {
+      alert(data.message);
+    }
   };
   return (
     <ScrollView>

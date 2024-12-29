@@ -11,9 +11,9 @@ export default function CategoryDropdown({ onCategoryChange }: Props) {
   const [isFocus, setIsFocus] = useState(false);
 
   const category = [
-    { label: "Cleaning", value: "1" },
-    { label: "Painter", value: "2" },
-    { label: "Electrician", value: "3" },
+    { label: "cleaning", value: "1" },
+    { label: "painter", value: "2" },
+    { label: "electrician", value: "3" },
   ];
 
   const handleChange = (item: { label: string; value: string }) => {

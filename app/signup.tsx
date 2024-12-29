@@ -15,7 +15,7 @@ import { AuthContext } from "@/context/authContext";
 type Props = {};
 
 const SignUpScreen = () => {
-  const { user, setUserInfo } = useContext(AuthContext);
+  const { setUserToken } = useContext(AuthContext);
   const [isLoading, setIsLoading] = useState(false);
   const [formData, setFormData] = useState({
     phone: "",
@@ -41,8 +41,9 @@ const SignUpScreen = () => {
         },
         body: JSON.stringify(formData),
       });
-      if (res.status === 201) {
-        setUserInfo(formData);
+      if (res.status === 200) {
+        const data = await res.json();
+        setUserToken(data.token);
         router.dismissAll();
         router.replace("/(tabs)/");
       } else {

@@ -13,13 +13,11 @@ import ImageSection from "@/components/profileTabComponents/ImageSection";
 import { Colors } from "@/constants/Colors";
 import { Ionicons } from "@expo/vector-icons";
 import { router } from "expo-router";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import { AuthContext } from "@/context/authContext";
 
 export default function profile() {
   const inset = useSafeAreaInsets();
-  const { user, logout, location } = useContext(AuthContext);
-  console.log({ location });
+  const { user, logout } = useContext(AuthContext);
 
   return (
     <ScrollView
@@ -57,14 +55,16 @@ export default function profile() {
           <ProfileField label="Your Service" icon={"create-outline"} />
           <ProfileField label="Settings" icon={"settings-outline"} />
         </View>
-        <TouchableOpacity
-          style={styles.addServiceBtn}
-          onPress={() => {
-            router.push("/listservice");
-          }}
-        >
-          <Text style={styles.addServiceBtnText}>Add Your Service</Text>
-        </TouchableOpacity>
+        {user?.role === "user" && (
+          <TouchableOpacity
+            style={styles.addServiceBtn}
+            onPress={() => {
+              router.push("/listservice");
+            }}
+          >
+            <Text style={styles.addServiceBtnText}>Add Your Service</Text>
+          </TouchableOpacity>
+        )}
       </View>
 
       <TouchableOpacity

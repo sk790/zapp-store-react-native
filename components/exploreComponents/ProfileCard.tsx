@@ -17,7 +17,7 @@ export default function ProfileCard({
   sp: any;
   distance: number;
 }) {
-  console.log({ distance });
+  // console.log({ distance });
 
   const { width, height } = Dimensions.get("window");
   return (

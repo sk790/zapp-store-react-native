@@ -1,38 +1,70 @@
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
-import React from "react";
+import React, { useContext, useState } from "react";
 import { Link, router, Stack } from "expo-router";
 import InputFields from "@/components/InputFields";
 import { Colors } from "@/constants/Colors";
 import SocialLoginBottons from "@/components/SocialLoginBottons";
+import { AuthContext } from "@/context/authContext";
 
 type Props = {};
 
 const SignInScreen = (props: Props) => {
+  const { setUserToken } = useContext(AuthContext);
+  const [loading, setLoading] = useState(false);
+  const [phone, setPhone] = useState("");
+  const [password, setPassword] = useState("");
+
+  const handleSubmit = async () => {
+    try {
+      setLoading(true);
+      const res = await fetch("http://192.168.120.190:5000/api/user/login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          phone,
+          password,
+        }),
+      });
+      const data = await res.json();
+      if (res.status === 200) {
+        setLoading(false);
+        // router.dismissAll();
+        setUserToken(data.token);
+        router.replace("/(tabs)/");
+      } else {
+        setLoading(false);
+        alert(data.message);
+      }
+    } catch (error) {
+      setLoading(false);
+      console.log({ error });
+    }
+  };
   return (
     <>
       <Stack.Screen options={{ headerTitle: "Sign In" }} />
       <View style={styles.container}>
         <Text style={styles.title}>Login to your account</Text>
         <InputFields
-          placeholder="Email Address"
+          placeholder="phone...."
           placeholderTextColor={Colors.gray}
-          autoCapitalize="none"
-          keyboardType="email-address"
+          maxLength={10}
+          keyboardType="number-pad"
+          value={phone}
+          onChangeText={(text) => setPhone(text)}
         />
         <InputFields
           placeholder="Password"
           placeholderTextColor={Colors.gray}
           autoCapitalize="none"
           secureTextEntry={true}
+          value={password}
+          onChangeText={(text) => setPassword(text)}
         />
 
-        <TouchableOpacity
-          style={styles.btn}
-          onPress={() => {
-            router.dismissAll();
-            router.push("/(tabs)");
-          }}
-        >
+        <TouchableOpacity style={styles.btn} onPress={handleSubmit}>
           <Text style={styles.btnText}>Login</Text>
         </TouchableOpacity>
         <View style={styles.text}>

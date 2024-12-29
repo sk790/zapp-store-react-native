@@ -11,12 +11,30 @@ import { AuthContext } from "@/context/authContext";
 type Props = {};
 
 const HomeScreen = (props: Props) => {
-  const { user } = useContext(AuthContext);
+  const { token, setUserInfo, user } = useContext(AuthContext);
   useEffect(() => {
-    if (user === null) {
+    if (token === null) {
       router.replace("/signin");
     }
-  }, [user]);
+  }, [token]);
+  useEffect(() => {
+    async function getProfile() {
+      try {
+        const res = await fetch(
+          "http://192.168.120.190:5000/api/user/get-profile"
+        );
+        const data = await res.json();
+        if (res.status === 200) {
+          setUserInfo(data.user);
+        } else {
+          console.log({ data });
+        }
+      } catch (error) {
+        console.log({ error });
+      }
+    }
+    getProfile();
+  }, []);
   return (
     <>
       <Stack.Screen
@@ -31,7 +49,8 @@ const HomeScreen = (props: Props) => {
           <FeturedServices />
         </View>
         <PromotionBanner />
-        <MakeSpBotton />
+        {user?.role === "user" && <MakeSpBotton />}
+        {/* <MakeSpBotton /> */}
         <View style={styles.container}></View>
       </ScrollView>
     </>

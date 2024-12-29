@@ -18,11 +18,6 @@ import { formatMongoDate } from "@/constants/formatedDate";
 const spprofile = () => {
   const { sp } = useLocalSearchParams();
   const sps = JSON.parse(sp as string);
-  // console.log(sps);
-
-  // console.log(sps.provider.mobile);
-
-  // const { user } = useContext(AuthContext);
   const user = {
     name: "Saurabh",
     coords: {
