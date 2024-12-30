@@ -10,47 +10,50 @@ import React from "react";
 import { Colors } from "@/constants/Colors";
 import { router } from "expo-router";
 
-export default function ProfileCard({
-  sp,
-  distance,
-}: {
-  sp: any;
+type Props = {
   distance: number;
-}) {
-  // console.log({ distance });
-
-  const { width, height } = Dimensions.get("window");
+  sp: {
+    category: string;
+    available: boolean;
+    address: string;
+    description: string;
+    provider: {
+      phone: string;
+    };
+  };
+};
+export default function ProfileCard({ distance, sp }: Props) {
+  const { width } = Dimensions.get("window");
   return (
-    <View
-      style={{
-        flexDirection: "column",
-        gap: 10,
-        width: width * 0.8,
-        borderRadius: 10,
-        backgroundColor: Colors.white,
-        padding: 5,
-      }}
-    >
+    <View style={[styles.container, { width: width * 0.8 }]}>
       <TouchableOpacity
         onPress={() => {
           router.push({
             pathname: "/spprofile",
-            params: { sp: JSON.stringify(sp.name) },
+            params: { sp: JSON.stringify(sp.provider.phone) },
           });
         }}
       >
         <Image
           source={require("@/assets/images/electrical.jpeg")}
-          style={{ width: "100%", height: 150, borderRadius: 10 }}
+          style={{ width: "100%", height: 100, borderRadius: 10 }}
         />
-        <Text>{sp.name}</Text>
-        <Text>{sp.title}</Text>
+        <Text>{sp.category}</Text>
+        <Text>{sp.available.toString()}</Text>
         <Text>{sp.address}</Text>
-        <Text>{distance.toFixed(2)} km</Text>
+        <Text>{distance} km</Text>
         <Text>{sp.description || "no description"}</Text>
       </TouchableOpacity>
     </View>
   );
 }
 
-const styles = StyleSheet.create({});
+const styles = StyleSheet.create({
+  container: {
+    flexDirection: "column",
+    gap: 10,
+    borderRadius: 10,
+    backgroundColor: Colors.white,
+    padding: 5,
+  },
+});

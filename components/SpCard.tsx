@@ -10,12 +10,7 @@ type Prop = {
   image: string;
   distance: number;
 };
-const SpCard = ({ name, title, id, address, image, distance }: Prop) => {
-  // console.log(distance);
-  // useEffect(() => {
-  //   console.log(distance);
-  // }, [distance]);
-
+const SpCard = ({ name, title, address, image, distance }: Prop) => {
   return (
     <View
       style={{
@@ -59,7 +54,7 @@ const SpCard = ({ name, title, id, address, image, distance }: Prop) => {
             <View>
               <Text>{name}</Text>
               <Text>{title}</Text>
-              <Text>{distance.toFixed(2)}Km</Text>
+              <Text>{distance}Km</Text>
             </View>
           </View>
           <View>

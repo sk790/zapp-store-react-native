@@ -11,108 +11,57 @@ import {
 import React, { useContext, useEffect, useRef, useState } from "react";
 import MapView, { Marker } from "react-native-maps";
 import ProfileCard from "@/components/exploreComponents/ProfileCard";
-import haversineDistance from "@/constants/getDistance";
-import { useLocalSearchParams } from "expo-router";
-import Animated from "react-native-reanimated";
 import { AuthContext } from "@/context/authContext";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { Ionicons } from "@expo/vector-icons";
 
 type Props = {};
 
 const ExploreScreen = (props: Props) => {
-  // const { service, userCoords } = useLocalSearchParams();
   const { location } = useContext(AuthContext);
-  const service = "Electrical";
   const scrollViewRef = useRef<ScrollView>(null);
-  const areaRange = 2;
-  const [searchCategory, setSearchCategory] = useState("");
-
-  const Sp = [
-    {
-      id: 1,
-      name: "Saurabh",
-      title: "Electrical",
-      address: "Roorkee",
-      image:
-        "https://cdni.iconscout.com/illustration/premium/thumb/male-user-image-illustration-download-in-svg-png-gif-file-formats--person-picture-profile-business-pack-illustrations-6515860.png",
-      coords: {
-        lat: 29.903641,
-        long: 77.945432,
-      },
-    },
-    {
-      id: 2,
-      name: "Prabhat",
-      title: "painter",
-      address: "Laksar",
-      image:
-        "https://cdni.iconscout.com/illustration/premium/thumb/male-user-image-illustration-download-in-svg-png-gif-file-formats--person-picture-profile-business-pack-illustrations-6515860.png",
-      coords: {
-        lat: 29.903841,
-        long: 77.945432,
-      },
-    },
-    {
-      id: 3,
-      name: "Savan",
-      title: "Cleaner",
-      address: "Saharanpur",
-      image:
-        "https://cdni.iconscout.com/illustration/premium/thumb/male-user-image-illustration-download-in-svg-png-gif-file-formats--person-picture-profile-business-pack-illustrations-6515860.png",
-      coords: {
-        lat: 29.909641,
-        long: 77.941432,
-      },
-    },
-    {
-      id: 4,
-      name: "Nikhil",
-      title: "Plumber",
-      address: "Delhi",
-      image:
-        "https://cdni.iconscout.com/illustration/premium/thumb/male-user-image-illustration-download-in-svg-png-gif-file-formats--person-picture-profile-business-pack-illustrations-6515860.png",
-      coords: {
-        lat: 29.921754, // Service provider's latitude,,,
-        long: 77.937274,
-      },
-    },
-    {
-      id: 5,
-      name: "Rajat",
-      title: "machanic",
-      address: "Delhi",
-      image:
-        "https://cdni.iconscout.com/illustration/premium/thumb/male-user-image-illustration-download-in-svg-png-gif-file-formats--person-picture-profile-business-pack-illustrations-6515860.png",
-      coords: {
-        lat: 29.89277,
-        long: 77.958845,
-      },
-    },
-  ];
-  const centralLatitude = 29.903502;
-  const centralLongitude = 77.945617;
+  const [spList, setSpList] = useState<any[]>([]);
+  const [distances, setDistances] = useState<number[]>([]);
+  const [searchQuery, setSearchQuery] = useState("");
+  const areaRange = 20;
   const rangeInKm = 10;
+
+  const centralLatitude = location?.latitude || 29.903502;
+  const centralLongitude = location?.longitude || 77.945617;
 
   const latitudeDelta = rangeInKm / 110.574;
   const longitudeDelta =
     rangeInKm / (111.32 * Math.cos((centralLatitude * Math.PI) / 180));
 
-  const distances: number[] = [];
+  useEffect(() => {
+    const getSpList = async () => {
+      try {
+        const res = await fetch(
+          "http://192.168.120.190:5000/api/sp/search-sp",
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ searchQuery, location, areaRange }),
+          }
+        );
 
-  const filteredSpByDistance = Sp.filter((sp) => {
-    const distance = haversineDistance(
-      {
-        latitude: location.latitude,
-        longitude: location.longitude,
-      },
-      { latitude: sp.coords.lat, longitude: sp.coords.long }
-    );
-    distances.push(distance); // Push distance to the distances array
-    if (distance <= areaRange) {
-      return { ...sp, distance };
-    }
-  });
+        const data = await res.json();
+        if (res.status === 200) {
+          setSpList(data.sp);
+          setDistances(data.distances);
+        } else {
+          setSpList([]);
+          setDistances([]);
+        }
+      } catch (error) {
+        console.log({ error });
+        console.error("Error fetching service providers:", error);
+      }
+    };
+    getSpList();
+  }, [searchQuery]);
+
   const scrollToCard = (index: number) => {
     scrollViewRef.current?.scrollTo({
       x: index * (Dimensions.get("window").width / 2 + 10), // Adjust for card width and gap
@@ -120,27 +69,18 @@ const ExploreScreen = (props: Props) => {
       animated: true,
     });
   };
-  const handleSearchCategoryChange = (text: string) => {
-    setSearchCategory(text.trim());
-  };
-  const [filteredSp, setFilteredSp] = useState<any>([]);
 
-  useEffect(() => {
-    if (searchCategory === "") return setFilteredSp([]);
-    const newFilteredSp = filteredSpByDistance.filter((sp) =>
-      sp.title.toLowerCase().startsWith(searchCategory.toLowerCase())
-    );
-    setFilteredSp(newFilteredSp);
-  }, [searchCategory]);
+  const handleSearchCategoryChange = (text: string) => {
+    setSearchQuery(text.trim());
+  };
+
   return (
     <>
       <View
-        style={[
-          filteredSp?.length === 0 ? { height: "100%" } : { height: "65%" },
-        ]}
+        style={[spList.length === 0 ? { height: "100%" } : { height: "65%" }]}
       >
         <MapView
-          style={[styles.map]}
+          style={styles.map}
           initialRegion={{
             latitude: centralLatitude,
             longitude: centralLongitude,
@@ -148,36 +88,26 @@ const ExploreScreen = (props: Props) => {
             longitudeDelta: longitudeDelta,
           }}
         >
-          {filteredSp?.map((item: any, index: any) => {
-            return (
-              <Marker
-                key={item.id}
-                coordinate={{
-                  latitude: item.coords.lat,
-                  longitude: item.coords.long,
-                }}
-                onPress={() => scrollToCard(index)}
-                title={item.name}
-                description={item.address}
-                pinColor="red"
-              />
-            );
-          })}
-          {location && (
+          {spList.map((item, index) => (
             <Marker
+              key={item._id}
               coordinate={{
-                latitude: location.latitude,
-                longitude: location.longitude,
+                latitude: item.location.lat,
+                longitude: item.location.long,
               }}
-              pinColor="blue"
+              onPress={() => scrollToCard(index)}
+              title={item.provider.phone}
+              description={item.address}
+              pinColor="red"
+              tappable
             />
-          )}
+          ))}
         </MapView>
         <View style={styles.searchBar}>
           <TextInput
-            placeholder="Search Category"
+            placeholder="Search Category, e.g. Electrician, Mechanic"
             style={styles.searchInput}
-            value={searchCategory}
+            value={searchQuery}
             onChangeText={handleSearchCategoryChange}
           />
           <Ionicons name="search-outline" size={20} color="black" />
@@ -191,18 +121,20 @@ const ExploreScreen = (props: Props) => {
         contentContainerStyle={{
           paddingRight: Platform.OS === "android" ? 20 : 0,
         }}
-        style={[styles.scrollView, { height: 250 }]}
+        style={[
+          styles.scrollView,
+          spList.length === 0 ? { height: 0 } : { height: 250 },
+        ]}
       >
         <View style={{ flexDirection: "row", gap: 10 }}>
-          {filteredSp?.map((item: any, index: any) => {
-            return (
+          {spList?.length > 0 &&
+            spList.map((item, index) => (
               <ProfileCard
-                key={item.id}
+                key={item._id}
                 sp={item}
                 distance={distances[index]}
               />
-            );
-          })}
+            ))}
         </View>
       </ScrollView>
     </>
@@ -218,7 +150,6 @@ const styles = StyleSheet.create({
   },
   scrollView: {
     position: "absolute",
-
     bottom: 10,
     left: 10,
     right: 10,
@@ -238,5 +169,5 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "space-between",
   },
-  searchInput: { height: 30, width: "90%" },
+  searchInput: { height: 30, width: "95%", fontSize: 12 },
 });

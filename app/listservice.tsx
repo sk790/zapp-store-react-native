@@ -5,7 +5,7 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import React, { useContext, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import CheckBox from "react-native-check-box";
 import CategoryDropdown from "@/components/addServiceComponents/CategoryDropdown";
 import { Colors } from "@/constants/Colors";
@@ -13,28 +13,43 @@ import InputWithLabel from "@/components/addServiceComponents/InputWithLabel";
 import Header from "@/components/Header";
 import { router, Stack } from "expo-router";
 import { AuthContext } from "@/context/authContext";
+import * as Location from "expo-location";
 
 export default function listservice() {
+  const { user } = useContext(AuthContext);
   const [formData, setFormData] = useState({
     serviceName: "",
     nickName: "",
     description: "",
     category: "",
     address: "",
+    location: {
+      lat: 0,
+      long: 0,
+    },
   });
+  const [btnStyle, setBtnStyle] = useState("red");
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
-
   const handleInputChange = (key: string, value: string) => {
     setFormData((prev) => ({
       ...prev,
       [key]: value,
     }));
   };
+  useEffect(() => {
+    if (formData.location.lat && formData.location.long) {
+      setBtnStyle("green");
+    } else {
+      setBtnStyle("red");
+    }
+  }, [formData.location]);
   const handleCategoryChange = (value: string | null) => {
     setSelectedCategory(value);
     formData.category = value as string;
   };
   const handleSubmit = async () => {
+    console.log(formData);
+
     const res = await fetch(
       "http://192.168.120.190:5000/api/service/add-service",
       {
@@ -52,6 +67,23 @@ export default function listservice() {
     } else {
       alert(data.message);
     }
+  };
+  const [loading, setLoading] = useState(false);
+  const handleGetLocation = async () => {
+    let { status } = await Location.requestForegroundPermissionsAsync();
+    if (status !== "granted") {
+      alert("Permission to access location was denied");
+    }
+    setLoading(true);
+    let loc = await Location.getCurrentPositionAsync({});
+    setFormData((prev) => ({
+      ...prev,
+      location: {
+        lat: loc.coords.latitude,
+        long: loc.coords.longitude,
+      },
+    }));
+    setLoading(false);
   };
   return (
     <ScrollView>
@@ -90,6 +122,9 @@ export default function listservice() {
           lines={3}
           value={formData.address}
           onChangeText={(value) => handleInputChange("address", value)}
+          handleGetLocation={handleGetLocation}
+          locBtnStyle={btnStyle}
+          locBtnLoading={loading}
         />
         <TouchableOpacity style={styles.addServiceBtn} onPress={handleSubmit}>
           <Text style={styles.addServiceBtnText}>Add Service</Text>

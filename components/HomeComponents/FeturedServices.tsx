@@ -5,37 +5,38 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import React from "react";
+import React, { useContext } from "react";
 import { Colors } from "@/constants/Colors";
 import HomeService from "@/components/HomeComponents/HomeService";
 import { router } from "expo-router";
+import { AuthContext } from "@/context/authContext";
 
 export default function FeturedServices() {
+  const { location } = useContext(AuthContext);
   const feturedService = [
     {
       id: 1,
-      title: "Electrical",
+      title: "electrician",
       image: require("@/assets/images/electrical.jpeg"),
     },
     {
       id: 2,
-      title: "Plumber",
+      title: "plumber",
       image: require("@/assets/images/electrical.jpeg"),
     },
     {
       id: 3,
-      title: "Painter",
+      title: "painter",
       image: require("@/assets/images/electrical.jpeg"),
     },
     {
       id: 4,
-      title: "Cleaner",
+      title: "cleaner",
       image: require("@/assets/images/electrical.jpeg"),
     },
   ];
-  const userCoords = JSON.stringify({ lat: 29.903841, long: 77.945432 });
-  const getSp = (service: string, userCoords: string) => {
-    router.push({ pathname: "/getsplist", params: { service, userCoords } });
+  const getSp = (service: string) => {
+    router.push({ pathname: "/getsplist", params: { service } });
   };
   return (
     <View style={styles.container}>
@@ -65,7 +66,7 @@ export default function FeturedServices() {
         {feturedService.map((item) => (
           <TouchableOpacity
             onPress={() => {
-              getSp(item.title, userCoords);
+              getSp(item.title);
             }}
             key={item.id}
           >

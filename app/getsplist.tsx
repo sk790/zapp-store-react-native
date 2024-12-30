@@ -1,108 +1,59 @@
 import { FlatList, StyleSheet, Text, View } from "react-native";
-import React from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { useLocalSearchParams } from "expo-router";
 import SpCard from "@/components/SpCard";
-import haversineDistance from "@/constants/getDistance";
+import { AuthContext } from "@/context/authContext";
 
 export default function GetSpList() {
-  const { service, userCoords } = useLocalSearchParams();
-  const user = JSON.parse(userCoords as string);
-  const areaRange = 1;
+  const { service: category } = useLocalSearchParams();
+  const { location } = useContext(AuthContext);
+  const areaRange = 10;
+  const [spList, setSpList] = useState<any>([]);
+  const [distances, setDistances] = useState([]);
 
-  const Sp = [
-    {
-      id: 1,
-      name: "Saurabh",
-      title: "Electrical",
-      address: "Roorkee",
-      image:
-        "https://cdni.iconscout.com/illustration/premium/thumb/male-user-image-illustration-download-in-svg-png-gif-file-formats--person-picture-profile-business-pack-illustrations-6515860.png",
-      coords: {
-        lat: 29.903641,
-        long: 77.945432,
-      },
-    },
-    {
-      id: 2,
-      name: "Prabhat",
-      title: "Painter",
-      address: "Laksar",
-      image:
-        "https://cdni.iconscout.com/illustration/premium/thumb/male-user-image-illustration-download-in-svg-png-gif-file-formats--person-picture-profile-business-pack-illustrations-6515860.png",
-      coords: {
-        lat: 29.903841,
-        long: 77.945432,
-      },
-    },
-    {
-      id: 3,
-      name: "Savan",
-      title: "Cleaner",
-      address: "Saharanpur",
-      image:
-        "https://cdni.iconscout.com/illustration/premium/thumb/male-user-image-illustration-download-in-svg-png-gif-file-formats--person-picture-profile-business-pack-illustrations-6515860.png",
-      coords: {
-        lat: 29.909641,
-        long: 77.941432,
-      },
-    },
-    {
-      id: 4,
-      name: "Nikhil",
-      title: "Plumber",
-      address: "Delhi",
-      image:
-        "https://cdni.iconscout.com/illustration/premium/thumb/male-user-image-illustration-download-in-svg-png-gif-file-formats--person-picture-profile-business-pack-illustrations-6515860.png",
-      coords: {
-        lat: 29.921754, // Service provider's latitude,,,
-        long: 77.937274,
-      },
-    },
-    {
-      id: 5,
-      name: "Rajat",
-      title: "Plumber",
-      address: "Delhi",
-      image:
-        "https://cdni.iconscout.com/illustration/premium/thumb/male-user-image-illustration-download-in-svg-png-gif-file-formats--person-picture-profile-business-pack-illustrations-6515860.png",
-      coords: {
-        lat: 29.89277,
-        long: 77.958845,
-      },
-    },
-  ];
-  const distances: number[] = [];
-  const filterdSp = Sp.filter((sp) => sp.title === service);
-
-  const filterByDistanceandService = filterdSp.filter((sp) => {
-    const distance = haversineDistance(
-      { latitude: user.lat, longitude: user.long },
-      { latitude: sp.coords.lat, longitude: sp.coords.long }
-    );
-    distances.push(distance); // Push distance to the distances array
-    if (distance <= areaRange) {
-      return { ...sp, distance };
-    }
-  });
+  useEffect(() => {
+    const getSpList = async () => {
+      try {
+        const res = await fetch("http://192.168.120.190:5000/api/sp/get-sp", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ areaRange, category, location }),
+        });
+        const data = await res.json();
+        if (res.status === 200) {
+          setSpList(data.filterByDistanceandService);
+          setDistances(data.distances);
+        }
+      } catch (error) {
+        console.log(error);
+      }
+    };
+    getSpList();
+  }, []);
 
   return (
     <View style={{ flex: 1, justifyContent: "center" }}>
-      {filterByDistanceandService.length === 0 ? (
+      {spList.length === 0 ? (
         <View style={{ justifyContent: "center", alignItems: "center" }}>
           <Text>No Sp Found</Text>
         </View>
       ) : (
         <FlatList
-          data={filterByDistanceandService}
-          keyExtractor={(item) => item.id.toString()}
+          data={spList}
+          keyExtractor={(item) => item._id.toString()}
           renderItem={({ item, index }) => {
             return (
               <SpCard
-                name={item.name}
-                title={item.title}
+                name={item.provider.phone}
+                title={item.serviceName}
                 address={item.address}
-                id={item.id}
-                image={item.image}
+                id={item._id}
+                image={
+                  item?.image ||
+                  "https://cdni.iconscout.com/illustration/premium/thumb/male-user-image-illustration-download-in-svg-png-gif-file-formats--person-picture-profile-business-pack-illustrations-6515860.png"
+                }
                 distance={distances[index]}
               />
             );
