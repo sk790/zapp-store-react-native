@@ -1,6 +1,6 @@
 import { FlatList, StyleSheet, Text, View } from "react-native";
 import React, { useContext, useEffect, useState } from "react";
-import { useLocalSearchParams } from "expo-router";
+import { Stack, useLocalSearchParams } from "expo-router";
 import SpCard from "@/components/SpCard";
 import { AuthContext } from "@/context/authContext";
 
@@ -34,33 +34,38 @@ export default function GetSpList() {
   }, []);
 
   return (
-    <View style={{ flex: 1, justifyContent: "center" }}>
-      {spList.length === 0 ? (
-        <View style={{ justifyContent: "center", alignItems: "center" }}>
-          <Text>No Sp Found</Text>
-        </View>
-      ) : (
-        <FlatList
-          data={spList}
-          keyExtractor={(item) => item._id.toString()}
-          renderItem={({ item, index }) => {
-            return (
-              <SpCard
-                name={item.provider.phone}
-                title={item.serviceName}
-                address={item.address}
-                id={item._id}
-                image={
-                  item?.image ||
-                  "https://cdni.iconscout.com/illustration/premium/thumb/male-user-image-illustration-download-in-svg-png-gif-file-formats--person-picture-profile-business-pack-illustrations-6515860.png"
-                }
-                distance={distances[index]}
-              />
-            );
-          }}
-        />
-      )}
-    </View>
+    <>
+      <Stack.Screen options={{ title: "Service Providers" }} />
+      <View style={{ flex: 1, justifyContent: "center" }}>
+        {spList.length === 0 ? (
+          <View style={{ justifyContent: "center", alignItems: "center" }}>
+            <Text>No Sp Found</Text>
+          </View>
+        ) : (
+          <FlatList
+            data={spList}
+            keyExtractor={(item) => item._id.toString()}
+            renderItem={({ item, index }) => {
+              return (
+                <SpCard
+                  key={index}
+                  name={item.provider.phone}
+                  title={item.serviceName}
+                  address={item.address}
+                  id={item._id}
+                  location={item.location}
+                  image={
+                    item?.image ||
+                    "https://cdni.iconscout.com/illustration/premium/thumb/male-user-image-illustration-download-in-svg-png-gif-file-formats--person-picture-profile-business-pack-illustrations-6515860.png"
+                  }
+                  distance={distances[index]}
+                />
+              );
+            }}
+          />
+        )}
+      </View>
+    </>
   );
 }
 

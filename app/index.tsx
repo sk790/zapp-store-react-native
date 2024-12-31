@@ -28,11 +28,9 @@ const WelcomeScreen = (props: Props) => {
   useEffect(() => {
     loadToken();
     (async () => {
-      let { status } = await Location.requestForegroundPermissionsAsync();
-      if (status !== "granted") {
-        alert("Permission to access location was denied");
-      }
-      let loc = await Location.getCurrentPositionAsync({});
+      let loc = await Location.getCurrentPositionAsync({
+        accuracy: Location.Accuracy.High,
+      });
       setUserLocation(loc.coords);
     })();
   }, []);

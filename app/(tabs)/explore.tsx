@@ -1,6 +1,8 @@
 import {
+  Alert,
   Dimensions,
   Image,
+  Linking,
   Platform,
   ScrollView,
   StyleSheet,
@@ -13,16 +15,19 @@ import MapView, { Marker } from "react-native-maps";
 import ProfileCard from "@/components/exploreComponents/ProfileCard";
 import { AuthContext } from "@/context/authContext";
 import { Ionicons } from "@expo/vector-icons";
-
+import * as Location from "expo-location";
+import Slider from "@react-native-community/slider";
+import RangeSlider from "@/components/exploreComponents/Slider";
 type Props = {};
 
 const ExploreScreen = (props: Props) => {
-  const { location } = useContext(AuthContext);
+  const { location, setUserLocation } = useContext(AuthContext);
   const scrollViewRef = useRef<ScrollView>(null);
   const [spList, setSpList] = useState<any[]>([]);
   const [distances, setDistances] = useState<number[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
-  const areaRange = 20;
+  const [areaRange, setareaRange] = useState(5);
+  // const areaRange = 20;
   const rangeInKm = 10;
 
   const centralLatitude = location?.latitude || 29.903502;
@@ -73,6 +78,40 @@ const ExploreScreen = (props: Props) => {
   const handleSearchCategoryChange = (text: string) => {
     setSearchQuery(text.trim());
   };
+  useEffect(() => {
+    const getLocation = async () => {
+      let { status } = await Location.requestForegroundPermissionsAsync();
+      if (status === "granted") {
+        let loc = await Location.getCurrentPositionAsync({});
+        setUserLocation(loc.coords);
+      } else {
+        Alert.alert(
+          "Location Permission Denied",
+          "To use this feature, please enable location services in your device settings.",
+          [
+            {
+              text: "Cancel",
+              style: "cancel",
+            },
+            {
+              text: "Open Settings",
+              onPress: () => {
+                if (Platform.OS === "ios") {
+                  Linking.openURL("app-settings:");
+                } else {
+                  Linking.openSettings();
+                }
+              },
+            },
+          ]
+        );
+      }
+    };
+
+    if (!location) {
+      getLocation();
+    }
+  }, [location]);
 
   return (
     <>
@@ -112,6 +151,7 @@ const ExploreScreen = (props: Props) => {
           />
           <Ionicons name="search-outline" size={20} color="black" />
         </View>
+        <RangeSlider areaRange={areaRange} setareaRange={setareaRange} />
       </View>
       <ScrollView
         horizontal
