@@ -1,40 +1,28 @@
-import {
-  FlatList,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
-} from "react-native";
-import React, { useContext } from "react";
+import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import React, { useEffect, useState } from "react";
 import { Colors } from "@/constants/Colors";
 import HomeService from "@/components/HomeComponents/HomeService";
 import { router } from "expo-router";
-import { AuthContext } from "@/context/authContext";
+import { API_URL } from "@env";
 
 export default function FeturedServices() {
-  const { location } = useContext(AuthContext);
-  const feturedService = [
-    {
-      id: 1,
-      title: "electrician",
-      image: require("@/assets/images/electrical.jpeg"),
-    },
-    {
-      id: 2,
-      title: "plumber",
-      image: require("@/assets/images/electrical.jpeg"),
-    },
-    {
-      id: 3,
-      title: "painter",
-      image: require("@/assets/images/electrical.jpeg"),
-    },
-    {
-      id: 4,
-      title: "cleaner",
-      image: require("@/assets/images/electrical.jpeg"),
-    },
-  ];
+  const [categories, setCategories] = useState([]);
+
+  useEffect(() => {
+    const getCategories = async () => {
+      try {
+        const response = await fetch(`${API_URL}/api/service/get-categories`);
+        const data = await response.json();
+        if (response.ok) {
+          setCategories(data.categories);
+        }
+      } catch (error) {
+        console.log("Error fetching categories:", error);
+      }
+    };
+    getCategories();
+  }, []);
+
   const getSp = (service: string) => {
     router.push({ pathname: "/getsplist", params: { service } });
   };
@@ -63,16 +51,18 @@ export default function FeturedServices() {
         </TouchableOpacity>
       </View>
       <View style={{ flexDirection: "row", flexWrap: "wrap" }}>
-        {feturedService.map((item) => (
-          <TouchableOpacity
-            onPress={() => {
-              getSp(item.title);
-            }}
-            key={item.id}
-          >
-            <HomeService title={item.title} image={item.image} />
-          </TouchableOpacity>
-        ))}
+        {categories?.map(
+          (item: { category: string; image: string; _id: string }) => (
+            <TouchableOpacity
+              onPress={() => {
+                getSp(item.category);
+              }}
+              key={item._id}
+            >
+              <HomeService title={item.category} image={item.image} />
+            </TouchableOpacity>
+          )
+        )}
       </View>
     </View>
   );

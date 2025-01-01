@@ -118,13 +118,13 @@ const ExploreScreen = () => {
     }
   }, [location]);
 
-  if (isLoading) {
-    return (
-      <View style={styles.loadingContainer}>
-        <ActivityIndicator size="large" color={Colors.primary} />
-      </View>
-    );
-  }
+  // if (isLoading) {
+  //   return (
+  //     <View style={styles.loadingContainer}>
+  //       <ActivityIndicator size="large" color={Colors.primary} />
+  //     </View>
+  //   );
+  // }
 
   return (
     <>
@@ -222,12 +222,11 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "space-between",
   },
-  searchInput: { height: 30, width: "95%", fontSize: 12 },
+  searchInput: { height: 35, width: "95%", fontSize: 12 },
   loadingContainer: {
     flex: 1,
     width: 200,
     justifyContent: "center",
-    alignItems: "center",
     backgroundColor: Colors.white,
   },
 });

@@ -26,7 +26,7 @@ const HomeScreen = (props: Props) => {
         if (res.status === 200) {
           setUserInfo(data.user);
         } else {
-          console.log({ data });
+          console.log(data);
         }
       } catch (error) {
         console.log({ error });

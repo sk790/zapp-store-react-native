@@ -1,4 +1,11 @@
-import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import {
+  ActivityIndicator,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
 import React, { useContext, useState } from "react";
 import { Link, router, Stack } from "expo-router";
 import InputFields from "@/components/InputFields";
@@ -7,11 +14,8 @@ import SocialLoginBottons from "@/components/SocialLoginBottons";
 import { AuthContext } from "@/context/authContext";
 import { API_URL } from "@env";
 
-type Props = {};
-
-const SignInScreen = (props: Props) => {
-  const { setUserToken } = useContext(AuthContext);
-  const [loading, setLoading] = useState(false);
+const SignInScreen = () => {
+  const { setUserToken, loading, setLoading } = useContext(AuthContext);
   const [phone, setPhone] = useState("");
   const [password, setPassword] = useState("");
 
@@ -31,7 +35,6 @@ const SignInScreen = (props: Props) => {
       const data = await res.json();
       if (res.status === 200) {
         setLoading(false);
-        // router.dismissAll();
         setUserToken(data.token);
         router.replace("/(tabs)");
       } else {
@@ -45,40 +48,48 @@ const SignInScreen = (props: Props) => {
   };
   return (
     <>
-      <Stack.Screen options={{ headerTitle: "Sign In" }} />
-      <View style={styles.container}>
-        <Text style={styles.title}>Login to your account</Text>
-        <InputFields
-          placeholder="phone...."
-          placeholderTextColor={Colors.gray}
-          maxLength={10}
-          keyboardType="number-pad"
-          value={phone}
-          onChangeText={(text) => setPhone(text)}
-        />
-        <InputFields
-          placeholder="Password"
-          placeholderTextColor={Colors.gray}
-          autoCapitalize="none"
-          secureTextEntry={true}
-          value={password}
-          onChangeText={(text) => setPassword(text)}
-        />
+      <ScrollView>
+        <Stack.Screen options={{ headerTitle: "Sign In" }} />
+        <View style={styles.container}>
+          <Text style={styles.title}>Login to your account</Text>
+          <InputFields
+            placeholder="phone...."
+            placeholderTextColor={Colors.gray}
+            maxLength={10}
+            keyboardType="number-pad"
+            value={phone}
+            onChangeText={(text) => setPhone(text)}
+          />
+          <InputFields
+            placeholder="Password"
+            placeholderTextColor={Colors.gray}
+            autoCapitalize="none"
+            secureTextEntry={true}
+            value={password}
+            onChangeText={(text) => setPassword(text)}
+          />
 
-        <TouchableOpacity style={styles.btn} onPress={handleSubmit}>
-          <Text style={styles.btnText}>Login</Text>
-        </TouchableOpacity>
-        <View style={styles.text}>
-          <Text>Don't have an account? </Text>
-          <Link href={"/signup"} asChild>
-            <TouchableOpacity>
-              <Text style={styles.loginlink}>signup</Text>
-            </TouchableOpacity>
-          </Link>
+          <TouchableOpacity style={styles.btn} onPress={handleSubmit}>
+            <Text style={styles.btnText}>
+              {loading ? (
+                <ActivityIndicator size="small" color={Colors.white} />
+              ) : (
+                "Login"
+              )}
+            </Text>
+          </TouchableOpacity>
+          <View style={styles.text}>
+            <Text>Don't have an account? </Text>
+            <Link href={"/signup"} asChild>
+              <TouchableOpacity>
+                <Text style={styles.loginlink}>"Sign Up"</Text>
+              </TouchableOpacity>
+            </Link>
+          </View>
+          <View style={styles.divider} />
+          <SocialLoginBottons emailhref={"/signup"} />
         </View>
-        <View style={styles.divider} />
-        <SocialLoginBottons emailhref={"/signup"} />
-      </View>
+      </ScrollView>
     </>
   );
 };

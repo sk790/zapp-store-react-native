@@ -13,7 +13,6 @@ import { router, Stack } from "expo-router";
 type Prop = {
   name: string;
   title: string;
-  id: number;
   address: string;
   image: string;
   distance: number;

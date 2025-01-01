@@ -12,7 +12,7 @@ export default function HomeService({
   return (
     <View style={[styles.container, { width: WIDTH / 2 - 24 }]}>
       <Image
-        source={image}
+        source={{ uri: image }}
         style={{ width: "100%", height: 125, borderRadius: 10 }}
       />
       <Text>{title}</Text>

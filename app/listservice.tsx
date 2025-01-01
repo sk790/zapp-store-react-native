@@ -59,10 +59,14 @@ export default function listservice() {
       body: JSON.stringify(formData),
     });
     const data = await res.json();
+    console.log(data);
+
     if (res.status === 200) {
       alert(data.message);
       router.replace("/(tabs)");
     } else {
+      console.log(data);
+
       alert(data.message);
     }
   };

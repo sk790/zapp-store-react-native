@@ -1,6 +1,7 @@
 import { StyleSheet, View } from "react-native";
 import { Dropdown } from "react-native-element-dropdown";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
+import { API_URL } from "@env";
 
 type Props = {
   onCategoryChange: (value: string | null) => void; // Callback function to send data to parent
@@ -11,9 +12,12 @@ export default function CategoryDropdown({ onCategoryChange }: Props) {
   const [isFocus, setIsFocus] = useState(false);
 
   const category = [
-    { label: "cleaning", value: "1" },
-    { label: "painter", value: "2" },
-    { label: "electrician", value: "3" },
+    { label: "electrician", value: "1" },
+    { label: "plumber", value: "2" },
+    { label: "carpenter", value: "3" },
+    { label: "painter", value: "4" },
+    { label: "cleaner", value: "5" },
+    { label: "machanic", value: "6" },
   ];
 
   const handleChange = (item: { label: string; value: string }) => {

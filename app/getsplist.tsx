@@ -36,6 +36,8 @@ export default function GetSpList() {
           setIsLoading(false);
           setSpList(data.filterByDistanceandService);
           setDistances(data.distances);
+        } else {
+          setIsLoading(false);
         }
       } catch (error) {
         setIsLoading(false);
@@ -71,7 +73,6 @@ export default function GetSpList() {
                   name={item.provider.phone}
                   title={item.serviceName}
                   address={item.address}
-                  id={item._id}
                   location={item.location}
                   image={
                     item?.image ||
