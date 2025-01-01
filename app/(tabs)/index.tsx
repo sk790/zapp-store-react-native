@@ -23,6 +23,8 @@ const HomeScreen = (props: Props) => {
       try {
         const res = await fetch(`${API_URL}/api/user/get-profile`);
         const data = await res.json();
+        console.log({ data });
+
         if (res.status === 200) {
           setUserInfo(data.user);
         } else {

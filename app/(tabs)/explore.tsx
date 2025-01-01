@@ -52,6 +52,7 @@ const ExploreScreen = () => {
         });
 
         const data = await res.json();
+        console.log({ data });
         if (res.status === 200) {
           setCardLoading(false);
           setIsLoading(false);

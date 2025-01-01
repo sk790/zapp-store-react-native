@@ -13,6 +13,7 @@ export default function FeturedServices() {
       try {
         const response = await fetch(`${API_URL}/api/service/get-categories`);
         const data = await response.json();
+        console.log({ data });
         if (response.ok) {
           setCategories(data.categories);
         }

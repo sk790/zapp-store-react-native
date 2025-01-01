@@ -1,4 +1,5 @@
 import {
+  ActivityIndicator,
   ScrollView,
   StyleSheet,
   Text,
@@ -17,7 +18,12 @@ import * as Location from "expo-location";
 import { API_URL } from "@env";
 
 export default function listservice() {
-  const { user } = useContext(AuthContext);
+  const {
+    user,
+    loading: submitLoading,
+    setLoading: setSubmitLoading,
+  } = useContext(AuthContext);
+
   const [formData, setFormData] = useState({
     serviceName: "",
     nickName: "",
@@ -49,25 +55,31 @@ export default function listservice() {
     formData.category = value as string;
   };
   const handleSubmit = async () => {
-    console.log(formData);
+    // console.log(formData);
+    try {
+      setSubmitLoading(true);
+      const res = await fetch(`${API_URL}/api/service/add-service`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(formData),
+      });
+      const data = await res.json();
+      console.log({ data });
 
-    const res = await fetch(`${API_URL}/api/service/add-service`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(formData),
-    });
-    const data = await res.json();
-    console.log(data);
-
-    if (res.status === 200) {
-      alert(data.message);
-      router.replace("/(tabs)");
-    } else {
-      console.log(data);
-
-      alert(data.message);
+      if (res.status === 200) {
+        setSubmitLoading(false);
+        alert(data.message);
+        router.replace("/(tabs)");
+      } else {
+        setSubmitLoading(false);
+        console.log(data);
+        alert(data.message);
+      }
+    } catch (error) {
+      setSubmitLoading(false);
+      console.log({ error });
     }
   };
   const [loading, setLoading] = useState(false);
@@ -128,8 +140,18 @@ export default function listservice() {
           locBtnStyle={btnStyle}
           locBtnLoading={loading}
         />
-        <TouchableOpacity style={styles.addServiceBtn} onPress={handleSubmit}>
-          <Text style={styles.addServiceBtnText}>Add Service</Text>
+        <TouchableOpacity
+          style={styles.addServiceBtn}
+          onPress={handleSubmit}
+          disabled={submitLoading}
+        >
+          <Text style={styles.addServiceBtnText}>
+            {submitLoading ? (
+              <ActivityIndicator size={"small"} color={Colors.white} />
+            ) : (
+              "Add Service"
+            )}
+          </Text>
         </TouchableOpacity>
       </View>
     </ScrollView>
