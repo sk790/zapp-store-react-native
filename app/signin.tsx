@@ -5,6 +5,7 @@ import InputFields from "@/components/InputFields";
 import { Colors } from "@/constants/Colors";
 import SocialLoginBottons from "@/components/SocialLoginBottons";
 import { AuthContext } from "@/context/authContext";
+import { API_URL } from "@env";
 
 type Props = {};
 
@@ -17,7 +18,7 @@ const SignInScreen = (props: Props) => {
   const handleSubmit = async () => {
     try {
       setLoading(true);
-      const res = await fetch("http://192.168.120.190:5000/api/user/login", {
+      const res = await fetch(`${API_URL}/api/user/login`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -32,7 +33,7 @@ const SignInScreen = (props: Props) => {
         setLoading(false);
         // router.dismissAll();
         setUserToken(data.token);
-        router.replace("/(tabs)/");
+        router.replace("/(tabs)");
       } else {
         setLoading(false);
         alert(data.message);

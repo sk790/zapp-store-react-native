@@ -1,8 +1,16 @@
-import { FlatList, StyleSheet, Text, View } from "react-native";
+import {
+  ActivityIndicator,
+  FlatList,
+  StyleSheet,
+  Text,
+  View,
+} from "react-native";
 import React, { useContext, useEffect, useState } from "react";
 import { Stack, useLocalSearchParams } from "expo-router";
 import SpCard from "@/components/SpCard";
 import { AuthContext } from "@/context/authContext";
+import { Colors } from "@/constants/Colors";
+import { API_URL } from "@env";
 
 export default function GetSpList() {
   const { service: category } = useLocalSearchParams();
@@ -10,11 +18,13 @@ export default function GetSpList() {
   const areaRange = 10;
   const [spList, setSpList] = useState<any>([]);
   const [distances, setDistances] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     const getSpList = async () => {
       try {
-        const res = await fetch("http://192.168.120.190:5000/api/sp/get-sp", {
+        setIsLoading(true);
+        const res = await fetch(`${API_URL}/api/sp/get-sp`, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -23,15 +33,24 @@ export default function GetSpList() {
         });
         const data = await res.json();
         if (res.status === 200) {
+          setIsLoading(false);
           setSpList(data.filterByDistanceandService);
           setDistances(data.distances);
         }
       } catch (error) {
+        setIsLoading(false);
         console.log(error);
       }
     };
     getSpList();
   }, []);
+  if (isLoading) {
+    return (
+      <View style={styles.loadingContainer}>
+        <ActivityIndicator size="large" color={Colors.primary} />
+      </View>
+    );
+  }
 
   return (
     <>
@@ -69,4 +88,11 @@ export default function GetSpList() {
   );
 }
 
-const styles = StyleSheet.create({});
+const styles = StyleSheet.create({
+  loadingContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: Colors.white,
+  },
+});

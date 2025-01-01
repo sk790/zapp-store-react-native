@@ -29,7 +29,9 @@ export default function profile() {
       <View style={styles.container}>
         <View style={styles.imageSection}>
           <Image
-            source={{ uri: "https://reactjs.org/logo-og.png" }}
+            source={{
+              uri: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTtuphMb4mq-EcVWhMVT8FCkv5dqZGgvn_QiA&s",
+            }}
             style={{ width: 100, height: 100, borderRadius: 50 }}
           />
           <View style={styles.nameSection}>

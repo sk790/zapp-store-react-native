@@ -1,4 +1,5 @@
 import {
+  ActivityIndicator,
   Alert,
   Dimensions,
   Image,
@@ -6,7 +7,6 @@ import {
   Platform,
   ScrollView,
   StyleSheet,
-  Text,
   TextInput,
   View,
 } from "react-native";
@@ -16,18 +16,19 @@ import ProfileCard from "@/components/exploreComponents/ProfileCard";
 import { AuthContext } from "@/context/authContext";
 import { Ionicons } from "@expo/vector-icons";
 import * as Location from "expo-location";
-import Slider from "@react-native-community/slider";
 import RangeSlider from "@/components/exploreComponents/Slider";
-type Props = {};
+import { Colors } from "@/constants/Colors";
+import { API_URL } from "@env";
 
-const ExploreScreen = (props: Props) => {
+const ExploreScreen = () => {
   const { location, setUserLocation } = useContext(AuthContext);
   const scrollViewRef = useRef<ScrollView>(null);
   const [spList, setSpList] = useState<any[]>([]);
   const [distances, setDistances] = useState<number[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [areaRange, setareaRange] = useState(5);
-  // const areaRange = 20;
+  const [isLoading, setIsLoading] = useState(false);
+  const [cardLoading, setCardLoading] = useState(false);
   const rangeInKm = 10;
 
   const centralLatitude = location?.latitude || 29.903502;
@@ -40,27 +41,31 @@ const ExploreScreen = (props: Props) => {
   useEffect(() => {
     const getSpList = async () => {
       try {
-        const res = await fetch(
-          "http://192.168.120.190:5000/api/sp/search-sp",
-          {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({ searchQuery, location, areaRange }),
-          }
-        );
+        setIsLoading(true);
+        setCardLoading(true);
+        const res = await fetch(`${API_URL}/api/sp/search-sp`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ searchQuery, location, areaRange }),
+        });
 
         const data = await res.json();
         if (res.status === 200) {
+          setCardLoading(false);
+          setIsLoading(false);
           setSpList(data.sp);
           setDistances(data.distances);
         } else {
+          setIsLoading(false);
+          setCardLoading(false);
           setSpList([]);
           setDistances([]);
         }
       } catch (error) {
-        console.log({ error });
+        setIsLoading(false);
+        setCardLoading(false);
         console.error("Error fetching service providers:", error);
       }
     };
@@ -112,6 +117,14 @@ const ExploreScreen = (props: Props) => {
       getLocation();
     }
   }, [location]);
+
+  if (isLoading) {
+    return (
+      <View style={styles.loadingContainer}>
+        <ActivityIndicator size="large" color={Colors.primary} />
+      </View>
+    );
+  }
 
   return (
     <>
@@ -210,4 +223,11 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
   },
   searchInput: { height: 30, width: "95%", fontSize: 12 },
+  loadingContainer: {
+    flex: 1,
+    width: 200,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: Colors.white,
+  },
 });

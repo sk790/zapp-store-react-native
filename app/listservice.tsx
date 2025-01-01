@@ -14,6 +14,7 @@ import Header from "@/components/Header";
 import { router, Stack } from "expo-router";
 import { AuthContext } from "@/context/authContext";
 import * as Location from "expo-location";
+import { API_URL } from "@env";
 
 export default function listservice() {
   const { user } = useContext(AuthContext);
@@ -50,20 +51,17 @@ export default function listservice() {
   const handleSubmit = async () => {
     console.log(formData);
 
-    const res = await fetch(
-      "http://192.168.120.190:5000/api/service/add-service",
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(formData),
-      }
-    );
+    const res = await fetch(`${API_URL}/api/service/add-service`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(formData),
+    });
     const data = await res.json();
     if (res.status === 200) {
       alert(data.message);
-      router.replace("/(tabs)/");
+      router.replace("/(tabs)");
     } else {
       alert(data.message);
     }

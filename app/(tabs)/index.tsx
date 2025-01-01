@@ -7,6 +7,7 @@ import FeturedServices from "@/components/HomeComponents/FeturedServices";
 import PromotionBanner from "@/components/HomeComponents/PromotionBanner";
 import MakeSpBotton from "@/components/HomeComponents/MakeSpBotton";
 import { AuthContext } from "@/context/authContext";
+import { API_URL } from "@env";
 
 type Props = {};
 
@@ -20,9 +21,7 @@ const HomeScreen = (props: Props) => {
   useEffect(() => {
     async function getProfile() {
       try {
-        const res = await fetch(
-          "http://192.168.120.190:5000/api/user/get-profile"
-        );
+        const res = await fetch(`${API_URL}/api/user/get-profile`);
         const data = await res.json();
         if (res.status === 200) {
           setUserInfo(data.user);
