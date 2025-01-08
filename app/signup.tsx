@@ -80,6 +80,8 @@ const SignUpScreen = () => {
         }),
       });
       const data = await res.json();
+      console.log({ data });
+
       if (res.status === 200) {
         setIsLoading(false);
         setUserToken(data.token);
